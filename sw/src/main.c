@@ -6,7 +6,9 @@
 #include <math.h>
 #include "timers_b.h"
 #include "platform.h"
+#include "xil_printf.h"
 
+#include "weis.h"
 
 #define IMGWIDTH 29
 #define IMGHEIGHT 29
@@ -23,21 +25,26 @@ void calculateLayer5(float* Layer4_Neurons_CPU, float* Layer4_Weights_CPU, doubl
 
 void InitHostMem(float *Layer1_Weights_CPU,float *Layer2_Weights_CPU, float *Layer3_Weights_CPU,float *Layer4_Weights_CPU);
 
-int main(int argc, char** argv){
-	float 
-		Layer1_Weights_CPU[(5*5+1)*6],
-		Layer2_Weights_CPU[(5*5+1)*6*50], 
-		Layer3_Weights_CPU[(5*5*50+1)*100], 
-		Layer4_Weights_CPU[(100+1)*10];
+/*float
+	Layer1_Weights_CPU[(5*5+1)*6],
+	Layer2_Weights_CPU[(5*5+1)*6*50],
+	Layer3_Weights_CPU[(5*5*50+1)*100],
+	Layer4_Weights_CPU[(100+1)*10];
+*/
+float
+	Layer1_Neurons_CPU[IMGWIDTH*IMGHEIGHT],
+	Layer2_Neurons_CPU[6*13*13],
+	Layer3_Neurons_CPU[50*5*5],
+	Layer4_Neurons_CPU[100];
 
-	float 
-		Layer1_Neurons_CPU[IMGWIDTH*IMGHEIGHT],
-		Layer2_Neurons_CPU[6*13*13],
-		Layer3_Neurons_CPU[50*5*5],
-		Layer4_Neurons_CPU[100];
-	
-	double
-		Layer5_Neurons_CPU[10];
+double
+	Layer5_Neurons_CPU[10];
+
+int main(int argc, char** argv){
+
+	init_platform();
+
+
 
 	int i;
 	
@@ -46,7 +53,7 @@ int main(int argc, char** argv){
 	float Input[29*29] = {
 	
 	// caract��re "2"
-	
+			/*
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -76,9 +83,9 @@ int main(int argc, char** argv){
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-	
+
 	// caract��re "3"
-	/*1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -109,7 +116,7 @@ int main(int argc, char** argv){
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 	
 	// caract��re "8"
-
+*/
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -139,30 +146,36 @@ int main(int argc, char** argv){
 	1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-*/
+
 	};
 
-	InitHostMem(Layer1_Weights_CPU,Layer2_Weights_CPU,Layer3_Weights_CPU,Layer4_Weights_CPU);
+	//InitHostMem(Layer1_Weights_CPU, Layer2_Weights_CPU, Layer3_Weights_CPU, Layer4_Weights_CPU);
 
-	//double t1, t2, t3, t4, t5, t6; 
-	//t1 = dtime();
-	for(int i = 0; i < 1000; i++) 
-    	calculateLayer1(Input, Layer1_Neurons_CPU);
-	//t2 = dtime();
-	for(int i = 0; i < 1000; i++)
+	XTime t1, t2, t3, t4, t5, t6;
+
+	XTime_GetTime(&t1);
+    calculateLayer1(Input, Layer1_Neurons_CPU);
+
+	XTime_GetTime(&t2);
     calculateLayer2(Layer1_Neurons_CPU, Layer1_Weights_CPU, Layer2_Neurons_CPU);
-	//t3 = dtime();
-	for(int i = 0; i < 1000; i++)
-	calculateLayer3(Layer2_Neurons_CPU, Layer2_Weights_CPU, Layer3_Neurons_CPU);
-	//t4 = dtime();
-	for(int i = 0; i < 1000; i++)
-	calculateLayer4(Layer3_Neurons_CPU, Layer3_Weights_CPU, Layer4_Neurons_CPU);
-	//t5 = dtime();
-	for(int i = 0; i < 1000; i++)
-	calculateLayer5(Layer4_Neurons_CPU, Layer4_Weights_CPU, Layer5_Neurons_CPU);
-	//t6 = dtime();
 
-	//printf("T1: %lf\nT2: %lf\nT3: %lf\nT4: %lf\nT5: %lf\n", t2-t1, t3-t2, t4-t3, t5-t4, t6-t5);
+	XTime_GetTime(&t3);
+	calculateLayer3(Layer2_Neurons_CPU, Layer2_Weights_CPU, Layer3_Neurons_CPU);
+
+	XTime_GetTime(&t4);
+	calculateLayer4(Layer3_Neurons_CPU, Layer3_Weights_CPU, Layer4_Neurons_CPU);
+
+	XTime_GetTime(&t5);
+	calculateLayer5(Layer4_Neurons_CPU, Layer4_Weights_CPU, Layer5_Neurons_CPU);
+
+	XTime_GetTime(&t6);
+
+	printf("Output took:\nL1: %.2f us.\nL2: %.2f us.\nL3: %.2f us.\nL4: %.2f us.\nL5: %.2f us.\n",
+	1.0 * (t2-t1) / (COUNTS_PER_SECOND/1000000), 1.0 * (t3-t2) / (COUNTS_PER_SECOND/1000000),
+	1.0 * (t4-t3) / (COUNTS_PER_SECOND/1000000),1.0 * (t5-t4) / (COUNTS_PER_SECOND/1000000),
+	1.0 * (t6-t5) / (COUNTS_PER_SECOND/1000000));
+
+
 	scoremax = FLT_MIN;
 	int indexmax=-1;
 	for(i=0;i<10;i++)
@@ -175,7 +188,7 @@ int main(int argc, char** argv){
 		}
 	}
 	printf("Le resultat est : %d \n",indexmax);
-
+    cleanup_platform();
 	return 0;
 }
 
